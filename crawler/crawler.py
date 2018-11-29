@@ -32,11 +32,16 @@ def post_launchProcess():
 
 @app.route('/v1.0/<string:hashtag>', methods=['GET'])
 def get_processResult(hashtag):
-    h = crawler.getHashtag('#' + hashtag)
+    h = crawler.getHashtag('#' + hashtag, crawler.session)
     if h != None:
         return jsonify(h.getTweetsList(crawler.session))
     return jsonify({'status': 'cannot find #' + hashtag})
 
+@app.route('/v1.0/debug/<string:hashtag>', methods=['GET'])
+def api_debug(hashtag):
+    result = crawler.session.query(Tweet).filter(Tweet.hashtag == hashtag).all()
+    return jsonify([{'user':elem.user, 'date':elem.date, 'content':elem.content, 'favorite':elem.favorite} for elem in result])
+    
 if __name__ == '__main__':
     app.run(debug=True)
 
