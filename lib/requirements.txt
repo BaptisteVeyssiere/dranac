@@ -1,9 +1,0 @@
-GoogleAppEngineCloudStorageClient
-GoogleAppEnginePipeline
-Graphy
-simplejson
-mock
-mox
-pg8000
-Flask==1.0.2
-Werkzeug==0.14.0
