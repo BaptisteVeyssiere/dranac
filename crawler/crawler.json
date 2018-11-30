@@ -1,0 +1,10 @@
+{
+    "CONSUMER_KEY": "zCGhQGNTEAZgiTMHe4IrD9Itu",
+    "CONSUMER_SECRET": "zrDEY4zHZU1vxjZQw63iBJUBB8eY8iOJEHee1TzFKVEvlh5N6d",
+    "ACCESS_TOKEN": "1064937197919502336-jHHwxZqDR29bdDul6rINclKeyBp1aF",
+    "ACCESS_SECRET": "DH0d7bYSoSdRLHPdSW0XPUmena5gb4D7EEVdKmO2Gcb5j",
+    "DB_ACCESS_DEBUG": "mysql://root:dbBkF60bIkjrfdPr@127.0.0.1:3306/dranac",
+    "DB_SQLITE_ACCESS": "sqlite:///bdd.db",
+    "DB_USER": "root",
+    "DB_PASSWD": "dbBkF60bIkjrfdPr"
+}
