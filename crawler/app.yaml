@@ -1,0 +1,11 @@
+runtime: python37 
+env_variables:
+    # Replace user, password, database, and instance connection name with the values obtained
+    # when configuring your Cloud SQL instance.
+    SQLALCHEMY_DATABASE_URI: >-
+      mysql://root:dbBkF60bIkjrfdPr@/dranac?unix_socket=/cloudsql/dranac-224020:europe-north1:dranacdb
+
+beta_settings:
+    cloud_sql_instances: dranac-224020:europe-north1:dranacdb
+
+entrypoint: gunicorn -b :$PORT main:app

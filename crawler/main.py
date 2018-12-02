@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# [START app]
+import logging
 
 from flask import Flask, jsonify, abort, request
 import json
@@ -23,11 +27,15 @@ def get_home():
 @app.route('/v1.0/hashtag', methods=['POST'])
 def post_launchProcess():
     if not request.json or not 'hashtag' in request.json :
-        abort(400)
-    hashtag = Hashtag('#' + request.json['hashtag'], request.json['lang'])
+        return jsonify({"status": "wait for the field 'hashtag' and 'lang'"})
+    hashtag = Hashtag('#' + request.json['hashtag'])
+    hashtag.lang = request.json['lang'] if 'lang' in request.json else hashtag.lang
     hashtag.createQuery()
+    print("DEBUG:POST_LAUCHPROCESS:Check lang + create Query:", hashtag.name)
     hashtag.sendQuery(crawler.python_tweets, crawler.session)
+    print("DEBUG:POST_LAUCHPROCESS:SendQuery")
     crawler.addHashtag(hashtag)
+    print("DEBUG:POST_LAUCHPROCESS:AddHashtag to crawler")
     return jsonify({'hashtag': hashtag.name})
 
 @app.route('/v1.0/<string:hashtag>', methods=['GET'])
@@ -39,10 +47,12 @@ def get_processResult(hashtag):
 
 @app.route('/v1.0/debug/<string:hashtag>', methods=['GET'])
 def api_debug(hashtag):
-    result = crawler.session.query(Tweet).filter(Tweet.hashtag == hashtag).all()
+    result = crawler.session.query(Tweet).filter(Tweet.hashtag == '#' + hashtag).all()
     return jsonify([{'user':elem.user, 'date':elem.date, 'content':elem.content, 'favorite':elem.favorite} for elem in result])
-    
-if __name__ == '__main__':
-    app.run(debug=True)
 
+if __name__ == '__main__':
+    app.run(debug=True, port=8080, host='127.0.0.1')
+
+# [END app]
+    
 ## TODO changer les status request ex 200, 400, 404, ...

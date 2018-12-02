@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import json
@@ -42,13 +44,16 @@ class Hashtag():
     def sendQuery(self, python_tweets, session):
         for status in python_tweets.search(**self.query)['statuses']:
             tweet = Tweet(hashtag=self.name,
-                          user=status['user']['screen_name'],
+                          user=bytes(status['user']['screen_name'], 'utf-8'),
                           date=status['created_at'],
-                          content=status['text'],
+                          content=bytes(status['text'], 'utf-8'),
                           favorite=status['favorite_count']
             )
+            print("DEBUG:SENDQUERY:body:", tweet.content)
             session.add(tweet)
+            print("DEBUG:SENDQUERY:add:", "Success")
             session.commit() ## Voir a faire un commit tous les X tweets
+            print("DEBUG:SENDQUERY:commit:", "Success")
 
     def getTweets(self, session):
         return session.query(Tweet).filter(Tweet.hashtag == self.name).all()
@@ -66,12 +71,15 @@ class   Crawler():
             self.conf = json.load(file)
         self.python_tweets = Twython(self.conf['CONSUMER_KEY'], self.conf['CONSUMER_SECRET'])
         self.hashtag = {}
+        print('DEBUG:CRAWLER:__init__(end)')
         
     def linkDB(self):
-        engine = create_engine(self.conf['DB_SQLITE_ACCESS'])
+        engine = create_engine(self.conf['DB_ACCESS'])
+        Base.metadata.create_all(engine)
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
+        print('DEBUG:CRAWLER:linkDB(end)')
 
     def addHashtag(self, hashtag):
         self.hashtag[hashtag.name] = hashtag
@@ -93,5 +101,5 @@ class   Crawler():
 
 ## Create db and table
 crawler = Crawler()
-engine = create_engine(crawler.conf['DB_SQLITE_ACCESS'])
+engine = create_engine(crawler.conf['DB_ACCESS'])
 Base.metadata.create_all(engine)
