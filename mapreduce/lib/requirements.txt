@@ -7,3 +7,5 @@ mox
 pg8000
 Flask==1.0.2
 Werkzeug==0.14.0
+SQLAlchemy==1.2.14
+python-dateutil
