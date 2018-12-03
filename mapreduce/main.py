@@ -5,7 +5,7 @@ from flask import Flask, jsonify
 from mapreduce import mapreduce_pipeline
 from src.DatabaseInputReader import DatabaseInputReader
 from src.DatabaseOutputWriter import DatabaseOutputWriter
-from src.mapreduce_jobs import CountTweetsPerHourPipeline
+from src.mapreduce_jobs import CountTweetsPerHourPipeline, AverageWordsPipeline, UserNbrPipeline
 from src.Tweet import TweetManager, Tweet
 from src.Request import RequestManager, Request
 
@@ -17,14 +17,14 @@ def add_request(session_id, hashtag):
     pipeline = CountTweetsPerHourPipeline(session_id, hashtag)
     pipeline.start()
     pipelines.append(pipeline.pipeline_id)
-    # pipeline = AverageWordsPipeline(session_id, hashtag)
-    # pipeline.start()
-    # pipelines.append(pipeline.pipeline_id)
-    # pipeline = UserNbrPipeline(session_id, hashtag)
-    # pipeline.start()
-    # pipelines.append(pipeline.pipeline_id)
+    pipeline = AverageWordsPipeline(session_id, hashtag)
+    pipeline.start()
+    pipelines.append(pipeline.pipeline_id)
+    pipeline = UserNbrPipeline(session_id, hashtag)
+    pipeline.start()
+    pipelines.append(pipeline.pipeline_id)
     request_manager = RequestManager.addRequest(session_id, hashtag, pipelines)
-    return 'OK'
+    return 'True'
 
 @app.route("/request/get/<session_id>/<hashtag>")
 def get_request(session_id, hashtag):
@@ -32,7 +32,7 @@ def get_request(session_id, hashtag):
     for pipeline_id in pipelines:
         pipeline = mapreduce_pipeline.MapreducePipeline.from_id(pipeline_id)
         if not pipeline.has_finalized:
-            return ""
+            return "False"
     RequestManager.endRequest(session_id, hashtag)
     request = RequestManager.getRequest(session_id, hashtag)
     return jsonify(tweets_per_hour=request.tweets_per_hour,

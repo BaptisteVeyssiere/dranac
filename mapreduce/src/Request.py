@@ -78,4 +78,11 @@ class RequestManager():
         result.average_words = pipeline_result
         result.put()
 
+    @classmethod
+    def setField(self, field, session_id, hashtag, pipeline_result):
+        switch = {'tweets_per_hour':self.addTweetsPerHour,
+                  'user_nbr':self.addUserNbr,
+                  'average_words':self.addAverageWords}
+        switch[field](session_id, hashtag, pipeline_result)
+
 
