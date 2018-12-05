@@ -93,7 +93,7 @@ class   Crawler():
         if hashtagtitle in self.hashtag:
             result = self.hashtag[hashtagtitle]
             diff = datetime.now() - result.date
-            if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= 1:
+            if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= 30:
                 self.delHashtag(hashtagtitle, session)
                 result = None
             return result
