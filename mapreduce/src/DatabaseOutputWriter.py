@@ -2,7 +2,6 @@ from mapreduce.output_writers import OutputWriter, _get_params
 from mapreduce.errors import BadWriterParamsError
 from mapreduce import context
 from Request import Request, RequestManager
-from Tweet import Tweet, TweetManager
 
 class DatabaseOutputWriter(OutputWriter):
     HASHTAG = "hashtag"

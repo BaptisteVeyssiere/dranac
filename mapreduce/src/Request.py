@@ -11,6 +11,7 @@ class Request(db.Model):
     tweets_per_hour = db.TextProperty()
     average_words = db.IntegerProperty()
     user_nbr = db.IntegerProperty()
+    favorite = db.TextProperty()
 
 class RequestManager():
 
@@ -23,7 +24,7 @@ class RequestManager():
         return result
         
     @classmethod
-    def addRequest(self, session_id, hashtag, pipelines):
+    def addRequest(self, session_id, hashtag, pipelines, favorites):
         result = self.getRequest(session_id, hashtag)
         if result:
             result.delete()
@@ -31,6 +32,7 @@ class RequestManager():
                           hashtag=hashtag,
                           pipelines=','.join(pipelines),
                           timestamp=datetime.datetime.now().date(),
+                          favorite=favorites,
                           finished=False)
         request.put()
 

@@ -26,9 +26,10 @@ def user_nbr_reduce(key, values):
 
 class CountTweetsPerHourPipeline(base_handler.PipelineBase):
 
-    def run(self, session_id, hashtag):
+    def run(self, session_id, hashtag, tweets):
         mapper_params = {
             "hashtag": hashtag,
+            "tweets": tweets,
         }
         reducer_params = {
             "output_writer": {
@@ -41,7 +42,7 @@ class CountTweetsPerHourPipeline(base_handler.PipelineBase):
             "tweets_per_hour",
             "src.mapreduce_jobs.tweets_per_hour_map",
             "src.mapreduce_jobs.tweets_per_hour_reduce",
-            "main.DatabaseInputReader",
+            "main.TweetInputReader",
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
@@ -49,9 +50,10 @@ class CountTweetsPerHourPipeline(base_handler.PipelineBase):
 
 class AverageWordsPipeline(base_handler.PipelineBase):
 
-    def run(self, session_id, hashtag):
+    def run(self, session_id, hashtag, tweets):
         mapper_params = {
             "hashtag": hashtag,
+            "tweets": tweets,
         }
         reducer_params = {
             "output_writer": {
@@ -64,7 +66,7 @@ class AverageWordsPipeline(base_handler.PipelineBase):
             "average_words",
             "src.mapreduce_jobs.average_words_map",
             "src.mapreduce_jobs.average_words_reduce",
-            "main.DatabaseInputReader",
+            "main.TweetInputReader",
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
@@ -72,9 +74,10 @@ class AverageWordsPipeline(base_handler.PipelineBase):
 
 class UserNbrPipeline(base_handler.PipelineBase):
 
-    def run(self, session_id, hashtag):
+    def run(self, session_id, hashtag, tweets):
         mapper_params = {
             "hashtag": hashtag,
+            "tweets": tweets,
         }
         reducer_params = {
             "output_writer": {
@@ -87,7 +90,7 @@ class UserNbrPipeline(base_handler.PipelineBase):
             "user_nbr",
             "src.mapreduce_jobs.user_nbr_map",
             "src.mapreduce_jobs.user_nbr_reduce",
-            "main.DatabaseInputReader",
+            "main.TweetInputReader",
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
