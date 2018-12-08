@@ -27,12 +27,13 @@ def get_home():
 @app.route('/v1.0/hashtag', methods=['POST'])
 def post_launchProcess():
     if not request.json or not 'hashtag' in request.json :
-        return jsonify({"status": "wait for the field 'hashtag' and 'lang'"})
+        return jsonify({"status": "wait for the field 'hashtag'"})
     hashtag = Hashtag('#' + request.json['hashtag'])
     hashtag.lang = request.json['lang'] if 'lang' in request.json else hashtag.lang
+    hashtag.nb = request.json['nb'] if 'nb' in request.json else hashtag.nb
     hashtag.sendQuery(crawler.api, crawler.session)
     crawler.addHashtag(hashtag)
-    return jsonify({'hashtag': hashtag.name})
+    return jsonify({'hashtag': hashtag.name, 'nb': hashtag.nb, 'result_type': hashtag.resulType, 'until': 'not active now', })
 
 @app.route('/v1.0/<string:hashtag>', methods=['GET'])
 def get_processResult(hashtag):
