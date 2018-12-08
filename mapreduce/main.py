@@ -1,8 +1,6 @@
 import json
 from flask import Flask, jsonify
 
-# New dependencies
-
 from mapreduce import mapreduce_pipeline
 from src.TweetInputReader import TweetInputReader
 from src.DatabaseOutputWriter import DatabaseOutputWriter
