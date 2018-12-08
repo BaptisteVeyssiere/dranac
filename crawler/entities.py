@@ -25,7 +25,7 @@ class   Tweet(Base):
     content = Column(String(300), nullable=False)
     favorite = Column(Integer)
     embeddedTweet = Column(String(300))
-    
+
 class Hashtag():
     def __init__(self, name, lang='en', resulType='mixed', nb=100):
         self.name = name
@@ -61,11 +61,11 @@ class Hashtag():
         for status in tweepy.Cursor(api.search, q=self.name, lang=self.lang, result_type=self.resulType, tweet_mode='extended').items(self.nb):
             if status.retweeted == False:
                 tweet = Tweet(hashtag=self.name,
-                              user=status.user.screen_name,
+                              user=status.user.screen_name.encode('utf-8'),
                               date=status.created_at,
-                              content=status.full_text,
+                              content=status.full_text.encode('utf-8'),
                               favorite=status.favorite_count,
-                              embeddedTweet="https://publish.twitter.com/oembed?url=https://twitter.com/{}/status/{}".format(status.user.screen_name, status.id_str)
+                              embeddedTweet="https://publish.twitter.com/oembed?url=https://twitter.com/{}/status/{}".format(status.user.screen_name, status.id_str).encode('utf-8')
                 )
             session.add(tweet)
             session.commit() ## Voir a faire un commit tous les X tweets
@@ -90,15 +90,28 @@ class   Crawler():
         self.hashtag = {}
         
     def linkDB(self):
-        engine = create_engine(self.conf['DB_ACCESS_SQLITE'])
+        engine = create_engine(self.conf['DB_ACCESS'])
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
 
-    def addHashtag(self, hashtag):
-        self.hashtag[hashtag.name] = hashtag
-
+    def addHashtag(self, hashtag, session, api, deadlineRequest):
+        if hashtag.name in self.hashtag:
+            result = self.hashtag[hashtag.name]
+            diff = datetime.now() - result.date
+            print("DEBUG:ADDHASHTAG:divmod:", divmod(diff.days * 86400 + diff.seconds, 60))
+            if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= deadlineRequest:
+                print("DEBUG:ADDHASHTAG:delete hashtag min:", divmod(diff.days * 86400 + diff.seconds, 60)[0])
+                self.delHashtag(hashtag.name, session)
+                self.hashtag[hashtag.name] = hashtag
+            else:
+                print("DEBUG:ADDHASHTAG:nothing to do diff min:")   
+        else:
+            print("DEBUG:ADDHASHTAG:add hashtag")
+            self.hashtag[hashtag.name] = hashtag
+            hashtag.sendQuery(api, session)
+                
     def delHashtag(self, hashtag, session):
         if hashtag in self.hashtag:
             self.hashtag[hashtag].erease(session)
@@ -107,7 +120,7 @@ class   Crawler():
     def getHashtag(self, hashtagtitle, session):
         if hashtagtitle in self.hashtag:
             result = self.hashtag[hashtagtitle]
-            diff = datetime.now() - result.date
+            # diff = datetime.now() - result.date
             # if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= 30:
             #     self.delHashtag(hashtagtitle, session)
             #     result = None
@@ -116,5 +129,5 @@ class   Crawler():
 
 ## Create db and table
 crawler = Crawler()
-engine = create_engine(crawler.conf['DB_ACCESS_SQLITE'])
+engine = create_engine(crawler.conf['DB_ACCESS'])
 Base.metadata.create_all(engine)

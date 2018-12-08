@@ -31,8 +31,7 @@ def post_launchProcess():
     hashtag = Hashtag('#' + request.json['hashtag'])
     hashtag.lang = request.json['lang'] if 'lang' in request.json else hashtag.lang
     hashtag.nb = request.json['nb'] if 'nb' in request.json else hashtag.nb
-    hashtag.sendQuery(crawler.api, crawler.session)
-    crawler.addHashtag(hashtag)
+    crawler.addHashtag(hashtag, crawler.session, crawler.api, crawler.conf['DEADLINEREQUEST'])
     return jsonify({'hashtag': hashtag.name, 'nb': hashtag.nb, 'result_type': hashtag.resulType, 'until': 'not active now', })
 
 @app.route('/v1.0/<string:hashtag>', methods=['GET'])
