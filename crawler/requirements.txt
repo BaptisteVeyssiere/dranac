@@ -1,6 +1,7 @@
 SQLAlchemy==1.2.14
-MySQL
+MySQL==0.0.2
 PyMySQL==0.8.0
 gunicorn==19.7.1
 Flask==1.0.2
 twython==3.7.0
+tweepy==3.7.0

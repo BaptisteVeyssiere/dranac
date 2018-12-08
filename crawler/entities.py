@@ -3,8 +3,10 @@
 import os
 import sys
 import json
-from twython import Twython
 from datetime import datetime
+
+# from twython import Twython
+import tweepy 
 
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -17,49 +19,62 @@ class   Tweet(Base):
     __tablename__ = 'tweet'
     
     id = Column(Integer, primary_key=True)
-    hashtag = Column(String(280), nullable=False)
-    user = Column(String(280), nullable=False)
-    date = Column(String(280), nullable=False)
+    hashtag = Column(String(300), nullable=False)
+    user = Column(String(300), nullable=False)
+    date = Column(String(300), nullable=False)
     content = Column(String(300), nullable=False)
     favorite = Column(Integer)
-        
+    embeddedTweet = Column(String(300))
+    
 class Hashtag():
-    def __init__(self, name, lang='en', resulType='popular', nb=10):
+    def __init__(self, name, lang='en', resulType='mixed', nb=100):
         self.name = name
         self.lang = lang
         self.nb = nb
         self.resulType = resulType
         self.query = {}
         self.date = datetime.now()
-        
-    def createQuery(self):
-       self.query = {
-           'q': self.name,
-           'count': self.nb,
-           'lang': self.lang,
-       }
-       if self.resulType :
-           self.query['result_type'] = self.resulType
+        self.until = '{:%Y-%m-%d}'.format(self.untilDate(datetime.now(), -10))
 
-    def sendQuery(self, python_tweets, session):
-        for status in python_tweets.search(**self.query)['statuses']:
-            tweet = Tweet(hashtag=self.name,
-                          user=bytes(status['user']['screen_name'], 'utf-8'),
-                          date=status['created_at'],
-                          content=bytes(status['text'], 'utf-8'),
-                          favorite=status['favorite_count']
-            )
-            print("DEBUG:SENDQUERY:body:", tweet.content)
+    def untilDate(self, date, delta):
+        m, y = (date.month+delta) % 12, date.year + ((date.month)+delta-1) // 12
+        if not m: m = 12
+        d = min(date.day, [31, 29 if y%4==0 and not y%400==0 else 28,31,30,31,30,31,31,30,31,30,31][m-1])
+        return date.replace(day=d,month=m, year=y)
+    
+    def createQuery(self):
+        pass
+       # self.query = {
+       #     'q': self.name,
+           # 'count': self.nb,
+           # 'lang': self.lang,
+           # 'tweet_mode': 'extended',
+           # 'unitl': self.until
+           # 'since_id': 10,
+           # 'max_id': 100,
+       # }
+       # if self.resulType :
+       #     self.query['result_type'] = self.resulType
+
+    def sendQuery(self, api, session):
+        save = 0
+        for status in tweepy.Cursor(api.search, q=self.name, lang=self.lang, result_type=self.resulType, tweet_mode='extended').items(self.nb):
+            if status.retweeted == False:
+                tweet = Tweet(hashtag=self.name,
+                              user=status.user.screen_name,
+                              date=status.created_at,
+                              content=status.full_text,
+                              favorite=status.favorite_count,
+                              embeddedTweet="https://publish.twitter.com/oembed?url=https://twitter.com/{}/status/{}".format(status.user.screen_name, status.id_str)
+                )
             session.add(tweet)
-            print("DEBUG:SENDQUERY:add:", "Success")
             session.commit() ## Voir a faire un commit tous les X tweets
-            print("DEBUG:SENDQUERY:commit:", "Success")
 
     def getTweets(self, session):
         return session.query(Tweet).filter(Tweet.hashtag == self.name).all()
 
     def getTweetsList(self, session):
-        return [{'user':elem.user, 'date':elem.date, 'content':elem.content, 'favorite':elem.favorite} for elem in self.getTweets(session)]
+        return [{'user':elem.user, 'date':elem.date, 'content':elem.content, 'favorite':elem.favorite, 'embeddedTweet': elem.embeddedTweet} for elem in self.getTweets(session)]
 
     def erease(self, session):
         session.query(Tweet).filter(Tweet.hashtag == self.name).delete()
@@ -69,17 +84,17 @@ class   Crawler():
     def __init__(self, path='crawler.json'):
         with open(path, 'r') as file:
             self.conf = json.load(file)
-        self.python_tweets = Twython(self.conf['CONSUMER_KEY'], self.conf['CONSUMER_SECRET'])
+        auth = tweepy.OAuthHandler(self.conf['CONSUMER_KEY'], self.conf['CONSUMER_SECRET'])
+        auth.set_access_token(self.conf['ACCESS_TOKEN'], self.conf['ACCESS_SECRET'])
+        self.api = tweepy.API(auth, wait_on_rate_limit=True)
         self.hashtag = {}
-        print('DEBUG:CRAWLER:__init__(end)')
         
     def linkDB(self):
-        engine = create_engine(self.conf['DB_ACCESS'])
+        engine = create_engine(self.conf['DB_ACCESS_SQLITE'])
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
-        print('DEBUG:CRAWLER:linkDB(end)')
 
     def addHashtag(self, hashtag):
         self.hashtag[hashtag.name] = hashtag
@@ -93,13 +108,13 @@ class   Crawler():
         if hashtagtitle in self.hashtag:
             result = self.hashtag[hashtagtitle]
             diff = datetime.now() - result.date
-            if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= 30:
-                self.delHashtag(hashtagtitle, session)
-                result = None
+            # if divmod(diff.days * 86400 + diff.seconds, 60)[0] >= 30:
+            #     self.delHashtag(hashtagtitle, session)
+            #     result = None
             return result
         return None
 
 ## Create db and table
 crawler = Crawler()
-engine = create_engine(crawler.conf['DB_ACCESS'])
+engine = create_engine(crawler.conf['DB_ACCESS_SQLITE'])
 Base.metadata.create_all(engine)

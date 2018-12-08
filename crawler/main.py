@@ -7,7 +7,7 @@ import logging
 from flask import Flask, jsonify, abort, request
 import json
 
-from twython import Twython
+#from twython import Twython
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -30,12 +30,8 @@ def post_launchProcess():
         return jsonify({"status": "wait for the field 'hashtag' and 'lang'"})
     hashtag = Hashtag('#' + request.json['hashtag'])
     hashtag.lang = request.json['lang'] if 'lang' in request.json else hashtag.lang
-    hashtag.createQuery()
-    print("DEBUG:POST_LAUCHPROCESS:Check lang + create Query:", hashtag.name)
-    hashtag.sendQuery(crawler.python_tweets, crawler.session)
-    print("DEBUG:POST_LAUCHPROCESS:SendQuery")
+    hashtag.sendQuery(crawler.api, crawler.session)
     crawler.addHashtag(hashtag)
-    print("DEBUG:POST_LAUCHPROCESS:AddHashtag to crawler")
     return jsonify({'hashtag': hashtag.name})
 
 @app.route('/v1.0/<string:hashtag>', methods=['GET'])
