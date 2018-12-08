@@ -8,7 +8,7 @@
             ht:hashtag
         }, function (data, status, header) {
             if (header.getResponseHeader("content-type").search("application/json") > -1) {
-                setTimeout(get_stats, 500);
+                setTimeout(get_stats, 3000);
             } else {
                 $('#stats').html(data);
             }

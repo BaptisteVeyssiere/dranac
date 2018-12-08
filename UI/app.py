@@ -13,6 +13,7 @@ app = Flask(__name__)
 APP_NAME = "Dranac"
 ERROR_INVALID = "Error: Invalid hashtag."
 ERROR_SERVER = "Error: Internal error. Please try again."
+ERROR_TWEET = "An error occurred with this tweet."
 CRAWLER_URL = "https://crawler-dot-corded-smithy-222417.appspot.com/v1.0/hashtag"
 MAPREDUCE_URL = "https://mapreduce-dot-corded-smithy-222417.appspot.com/"
 MAPREDUCE_ADD = "request/add/1/"
@@ -37,6 +38,50 @@ def start_stats():
     return jsonify({'status': True})
 
 
+def get_embedded_tweet(url, fallback_value):
+    response = requests.get(url)
+    if response.status_code != 200 or response.headers['content-type'].find("application/json") < 0:
+        if fallback_value is not None:
+            return fallback_value
+        return ERROR_TWEET
+    content = json.loads(response.content)
+    if content.get('html') is not None:
+        return content.get('html')
+    if fallback_value is not None:
+        return fallback_value
+    return ERROR_TWEET
+
+
+def get_favorites(favorite_list):
+    favorites = []
+    if favorite_list is not None:
+        for fav in favorite_list:
+            if fav.get('embeddedTweet') is not None:
+                favorites.append({'tweet': True,
+                                  'content': get_embedded_tweet(fav['embeddedTweet'],
+                                                                fav.get('content'))})
+            elif fav.get('content') is not None:
+                favorites.append({'tweet': True, 'content': fav['content']})
+            else:
+                favorites = [{'tweet': False,
+                              'content': 'Favorite tweets is not implemented yet.'}]
+                break
+    if len(favorites) < 1:
+        favorites = [{'tweet': False,
+                      'content': 'There is no favorite tweet.'}]
+    return favorites
+
+
+def get_graph_data(tweets_per_hour):
+    tweets_per_hour = [s.encode('utf-8') for s in tweets_per_hour]
+    time_list = [i.decode('utf-8').split(':', 1)[0].replace(" ", "/") for i in tweets_per_hour]
+    nbr_list = [i.decode('utf-8').split(': ', 1)[1] for i in tweets_per_hour]
+    data = []
+    for i in range(len(time_list)):
+        data.append({'x': time_list[i].split('/'), 'y': nbr_list[i]})
+    return data
+
+
 @app.route('/get_stats', methods=['POST'])
 def get_stats():
     hashtag = request.form.get('ht')
@@ -48,28 +93,10 @@ def get_stats():
     content = json.loads(response.content)
     if content.get('status') is not None and not content['status']:
         return jsonify({'status': False})
-    tweets_per_hour = content['tweets_per_hour']
-    tweets_per_hour = [s.encode('utf-8') for s in tweets_per_hour]
-    time_list = [i.decode('utf-8').split(':', 1)[0].replace(" ", "/") for i in tweets_per_hour]
-    nbr_list = [i.decode('utf-8').split(': ', 1)[1] for i in tweets_per_hour]
-    data = []
-    for i in range(len(time_list)):
-        data.append({'x': time_list[i].split('/'), 'y': nbr_list[i]})
+    data = get_graph_data(content['tweets_per_hour'])
     average_word = content['average_words']
     user_nbr = content['user_nbr']
-    favorite_list = content.get('favorites')
-    favorites = []
-    if favorite_list is not None:
-        for fav in favorite_list:
-            if fav.get('content') is not None:
-                favorites.append({'tweet': True, 'content': fav['content']})
-            else:
-                favorites = [{'tweet': False,
-                              'content': 'Favorite tweets is not implemented yet.'}]
-                break
-    if len(favorites) < 1:
-        favorites = [{'tweet': False,
-                      'content': 'There is no favorite tweet.'}]
+    favorites = get_favorites(content.get('favorites'))
     return make_response(render_template("hashtag_stats.html", data=data,
                                          user_nbr=user_nbr, average_word=average_word,
                                          favorites=favorites))
