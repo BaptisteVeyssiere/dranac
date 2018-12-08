@@ -46,7 +46,7 @@ class CountTweetsPerHourPipeline(base_handler.PipelineBase):
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
-            shards=2)
+            shards=1)
 
 class AverageWordsPipeline(base_handler.PipelineBase):
 
@@ -70,7 +70,7 @@ class AverageWordsPipeline(base_handler.PipelineBase):
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
-            shards=2)
+            shards=1)
 
 class UserNbrPipeline(base_handler.PipelineBase):
 
@@ -94,5 +94,5 @@ class UserNbrPipeline(base_handler.PipelineBase):
             "main.DatabaseOutputWriter",
             mapper_params=mapper_params,
             reducer_params=reducer_params,
-            shards=2)
+            shards=1)
 
