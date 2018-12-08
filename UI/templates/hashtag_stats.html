@@ -1,0 +1,124 @@
+<div class="card-header">
+    <div class="card-header-title">
+        Hashtag statistics
+    </div>
+</div>
+<div class="row no-gutters row-bordered">
+    <div class="col-md-12 col-lg-8">
+        <div class="card-body">
+            <canvas id="tweetChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 col-lg-12 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <span style="font-size: 3em; color: Dodgerblue;">
+                                    <i class="fas fa-book"></i>
+                                </span>
+                                <div class="ml-3">
+                                    <div class="text-muted">Average word</div>
+                                    <div class="text-large">{{ average_word }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-12 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <span style="font-size: 3em; color: Dodgerblue;">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                                <div class="ml-3">
+                                    <div class="text-muted">Users</div>
+                                    <div class="text-large">{{ user_nbr }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card mt-2 ml-3 mr-3 mb-3">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <div class="d-flex align-items-center">
+                        <span style="font-size: 1.5em; color: #f4ff26;">
+                            <i class="fas fa-star"></i>
+                        </span>
+                        <div class="ml-3">
+                            Most favorite tweets
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="row">
+                        {% for fav in favorites %}
+                        <div class="col-12">
+                                    {{ fav['content']|safe }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var data = [ {% for item in data %}
+        {x: new Date({{ item['x'][2] }}, {{ item['x'][1] }} - 1, {{ item['x'][0] }}, {{ item['x'][3] }}, 0, 0, 0),
+        y: {{ item['y'] }} },
+        {% endfor %}
+    ];
+	var context = document.getElementById("tweetChart");
+    function DrawTimeChart(context, data) {
+        var res = new Chart(context, {
+        type: 'line',
+        data: {
+                datasets: [{
+                    label: "Number of tweet",
+                    data: data,
+                    borderColor: "#459bc4",
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: "Number of tweet per time"
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tweets'
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+	DrawTimeChart(context, data);
+</script>

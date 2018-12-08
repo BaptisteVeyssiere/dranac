@@ -1,0 +1,29 @@
+<div id="loading" class="card-body text-center">
+    <span class="fa fa-refresh fa-spin"></span>
+</div>
+<script>
+    var hashtag = "{{ hashtag }}";
+    function get_stats() {
+        $.post("get_stats", {
+            ht:hashtag
+        }, function (data, status, header) {
+            if (header.getResponseHeader("content-type").search("application/json") > -1) {
+                setTimeout(get_stats, 500);
+            } else {
+                $('#stats').html(data);
+            }
+        });
+    }
+    function start_stats() {
+        $.post("start_stats", {
+            ht: hashtag
+        }, function (data, status, header) {
+            if (header.getResponseHeader("content-type").search("application/json") > -1) {
+                get_stats()
+            } else {
+                $('#stats').html(data);
+            }
+        });
+    }
+    window.onload = start_stats;
+</script>
