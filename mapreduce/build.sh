@@ -1,16 +1,6 @@
 #!/bin/bash
 
 dir=`dirname $0`
-demo_dir=`pwd`
-
-build_demo () {
-  fetch_dependencies
-}
-
-run_demo () {
-  build_demo
-  dev_appserver.py "$dir"
-}
 
 clean_dependencies() {
   for dep in `cat $dir/lib/todelete.txt`
@@ -19,7 +9,7 @@ clean_dependencies() {
   done
 }
 
-fetch_dependencies() {
+build_project() {
   if [ ! `which pip` ]
   then
     echo "pip not found. pip is required to install dependencies."
@@ -31,16 +21,13 @@ fetch_dependencies() {
 }
 
 case "$1" in
-  build_demo)
-    build_demo
-    ;;
-  run_demo)
-    run_demo
+  build_project)
+    build_project
     ;;
   clean_dependencies)
     clean_dependencies
     ;;
   *)
-    echo $"Usage: $0 {build_demo|run_demo|clean_dependencies}"
+    echo $"Usage: $0 {build_project|clean_dependencies}"
     exit 1
 esac

@@ -5,28 +5,42 @@ from google.appengine.api import app_identity
 from mapreduce import mapreduce_pipeline, base_handler
 
 def tweets_per_hour_map(tweet):
+    """Map function for the tweets_per_hour pipeline"""
+
     date = parser.parse(tweet.date)
     yield (date.strftime('%d/%m/%Y %H'), 1)
 
 def average_words_map(tweet):
+    """Map function for the average_words pipeline"""
+
     word_nbr = len(tweet.content.split())
     yield (1, word_nbr)
 
 def user_nbr_map(tweet):
+    """Map function for the user_nbr pipeline"""
+
     yield (1, tweet.user)
 
 def tweets_per_hour_reduce(key, values):
+    """Reduce function for the tweets_per_hour pipeline"""
+
     yield "%s: %d" % (key, sum([int(i) for i in values]))
 
 def average_words_reduce(key, values):
+    """Reduce function for the average_words pipeline"""
+
     yield (sum([int(i) for i in values]) / len(values))
 
 def user_nbr_reduce(key, values):
+    """Reduce function for the user_nbr pipeline"""
+
     yield len(set(values))
 
 class CountTweetsPerHourPipeline(base_handler.PipelineBase):
 
     def run(self, session_id, hashtag, tweets):
+        """Method called to run the pipeline and define the parameters"""
+
         mapper_params = {
             "hashtag": hashtag,
             "tweets": tweets,
@@ -51,6 +65,8 @@ class CountTweetsPerHourPipeline(base_handler.PipelineBase):
 class AverageWordsPipeline(base_handler.PipelineBase):
 
     def run(self, session_id, hashtag, tweets):
+        """Method called to run the pipeline and define the parameters"""
+
         mapper_params = {
             "hashtag": hashtag,
             "tweets": tweets,
@@ -75,6 +91,8 @@ class AverageWordsPipeline(base_handler.PipelineBase):
 class UserNbrPipeline(base_handler.PipelineBase):
 
     def run(self, session_id, hashtag, tweets):
+        """Method called to run the pipeline and define the parameters"""
+
         mapper_params = {
             "hashtag": hashtag,
             "tweets": tweets,
