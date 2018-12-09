@@ -19,12 +19,12 @@ class   Tweet(Base):
     __tablename__ = 'tweet'
     
     id = Column(Integer, primary_key=True)
-    hashtag = Column(String(1000), nullable=False)
-    user = Column(String(1000), nullable=False)
-    date = Column(String(1000), nullable=False)
-    content = Column(String(1000), nullable=False)
+    hashtag = Column(String(3000), nullable=False)
+    user = Column(String(3000), nullable=False)
+    date = Column(String(3000), nullable=False)
+    content = Column(String(5000), nullable=False)
     favorite = Column(Integer)
-    embeddedTweet = Column(String(1000))
+    embeddedTweet = Column(String(4000))
 
 class Hashtag():
     def __init__(self, name, lang='en', resulType='mixed', nb=100):
