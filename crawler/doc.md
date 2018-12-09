@@ -1,3 +1,19 @@
+## The Architecture
+the project is divided into three main parts/program which correspond to three roles the project needs.  
+The architecture corresponds to a micro-service project, it allows a more flexible development environment.  
+The three parts are the crawler which will communicate with the twitters API and "feed" the database with pre-sorted tweets.  
+The second one, the mapreduce, is responsible to compute statistics based on tweets get by the crawler.  
+Finally, the medium between the project and the client is the UI program.  
+UI program is also the orchestrator of the dranac project. Indeed, it is that part which will request the other services.  
+As described before dranac could be defined as micro-services project working in order to deliver a full service for all the client.  
+The main purpose of this architecture is threefold:
+* First each part is responsible for one task and doesn't prevent other services from working. The upgrade of the platform could be performing service by service without changing the whole project.
+* When the platform is up and meet a huge amount of request. Thanks to the kubernetes used by Google App Engin only the services with the most difficulties will be duplicate and not a whole monolithic program. This allows companies to pay less and deploy as they want, where they want. For example: one UI, two crawler and three mapreduce per country which use the service .
+* It brings more flexibility in the project. Indeed, for now dranac only use python with Flask to create api, but for other future feature another programming language could be used. Developer are not bound to the same language, same technology and the same way to code.
+
+[diagram]
+
+
 ## Crawler
 The aim goal of the crawler is to help the user to find a string in the twitters API. In this case the string correspond to a hashatg and it will look for with default parameters or those gave by the user/WebUI.  
 In order to communicate with the rest of the infrastructure this program takes the form of a REST API which is accessible thanks to the Flask library.  
