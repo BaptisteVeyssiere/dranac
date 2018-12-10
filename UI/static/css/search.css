@@ -1,0 +1,13 @@
+.top-bar {
+    background-color: #ffffff;
+    box-shadow: 0 0 5px black;
+}
+
+.obj {
+    background-color: white;
+    box-shadow: 1px 1px 3px black;
+}
+
+body {
+    background-color: lightgrey;
+}
