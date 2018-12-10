@@ -14,6 +14,9 @@ class APIOutput():
     @classmethod
     def sortDates(self, tweets_per_hour):
         """Sort the tweets_per_hour list by date"""
+
+        if tweets_per_hour is None or len(tweets_per_hour) <= 0:
+            return tweets_per_hour
         hour_list = json.loads(tweets_per_hour)
         tweets_per_hour = [s.encode('ascii') for s in hour_list]
         return sorted(tweets_per_hour, key=self.sortingDates)

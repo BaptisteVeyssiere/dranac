@@ -2,9 +2,9 @@ bunch-1.0.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvF
 bunch-1.0.1.dist-info/LICENSE.txt,sha256=V8qVySBZyDgGJRkkYpeb0ymUquP835Av9useRn7rBGk,1079
 bunch-1.0.1.dist-info/METADATA,sha256=ATDHn0hyKHN-X5qHht0dCkxZfndLWn1GbdI9nsyOQTo,3418
 bunch-1.0.1.dist-info/RECORD,,
-bunch-1.0.1.dist-info/WHEEL,sha256=H-E5NMw2OUbTg-aUN7cZGK-Ilk4JRxu745afGN2ruK0,93
+bunch-1.0.1.dist-info/WHEEL,sha256=5SpMnqY0ochpzjyzPpjWECeylLHU_RGC6DEZSP-3hxE,93
 bunch-1.0.1.dist-info/top_level.txt,sha256=A1w3sDjR8t1mZ4GDuhD9afxgybqy6nHJHPA4CbrgFRA,6
 bunch/__init__.py,sha256=FRfgBwk31pW9uPwzkc7PMO6rsjht1C-R8gdkKbFkY4g,13203
-bunch/__pycache__/__init__.cpython-37.pyc,,
-bunch/__pycache__/test.cpython-37.pyc,,
+bunch/__init__.pyc,,
 bunch/test.py,sha256=6QLuwWCKryW4jqAqYJJzJKh45yteix2857srnXCbIA8,161
+bunch/test.pyc,,
