@@ -105,6 +105,7 @@ class   Crawler():
                 print("DEBUG:ADDHASHTAG:delete hashtag min:", divmod(diff.days * 86400 + diff.seconds, 60)[0])
                 self.delHashtag(hashtag.name, session)
                 self.hashtag[hashtag.name] = hashtag
+                hashtag.sendQuery(api, session)
             else:
                 print("DEBUG:ADDHASHTAG:nothing to do diff min:")   
         else:

@@ -1,8 +1,6 @@
 service:crawler
 runtime: python37
 env_variables:
-    # Replace user, password, database, and instance connection name with the values obtained
-    # when configuring your Cloud SQL instance.
     SQLALCHEMY_DATABASE_URI: >-
       mysql://root:dbBkF60bIkjrfdPr@/dranac?unix_socket=/cloudsql/dranac-224020:europe-north1:dranacdb
 
