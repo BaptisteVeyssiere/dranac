@@ -1,4 +1,5 @@
-runtime: python37 
+service:crawler
+runtime: python37
 env_variables:
     # Replace user, password, database, and instance connection name with the values obtained
     # when configuring your Cloud SQL instance.
