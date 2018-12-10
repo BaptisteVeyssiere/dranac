@@ -93,10 +93,13 @@ def get_stats():
     content = json.loads(response.content)
     if content.get('status') is not None and not content['status']:
         return jsonify({'status': False})
-    data = get_graph_data(content['tweets_per_hour'])
-    average_word = content['average_words']
-    user_nbr = content['user_nbr']
-    favorites = get_favorites(content.get('favorites'))
+    try:
+        data = get_graph_data(content['tweets_per_hour'])
+        average_word = content['average_words']
+        user_nbr = content['user_nbr']
+        favorites = get_favorites(content.get('favorites'))
+    except TypeError:
+        return make_response(render_template("error.html", message=ERROR_SERVER))
     return make_response(render_template("hashtag_stats.html", data=data,
                                          user_nbr=user_nbr, average_word=average_word,
                                          favorites=favorites))
