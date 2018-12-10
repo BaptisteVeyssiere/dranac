@@ -18,7 +18,7 @@ The main purpose of this architecture is threefold:
 The aim goal of the crawler is to help the user to find a string in the twitters API. In this case the string correspond to a hashatg and it will look for with default parameters or those gave by the user/WebUI.  
 In order to communicate with the rest of the infrastructure this program takes the form of a REST API which is accessible thanks to the Flask library.  
 The crawler is divided into three parts:  
-* The first one is responsible for the skeleton of the program. It will launch flask with the good parameter, authenticate the crawler to the twitter API, and the SQL server and load the configuration file. This part will also list the different hashtag search the different user. (*Crawler* class on the file entities.py)  
+* The first one is responsible for the skeleton of the program. It will launch flask with the good parameter, authenticate the crawler to the twitter API, and the SQL server and load the configuration file. This part will also list the different hashtag search request by user. (*Crawler* class on the file entities.py)  
 * The second part will lead the communication between the twitter API and the crawler. Each Hashtag which will be searched by the crawler will be associated with a class and special methods in order to manage them. (*Hashtag* class on the file entities.py)  
 * The last one manage the communication with the SQL server, each tweet will be associated with a class then a diagram and push into the SQL server. (*Tweet* class on the file entities.py)
 

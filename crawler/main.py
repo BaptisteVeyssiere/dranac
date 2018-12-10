@@ -50,5 +50,3 @@ if __name__ == '__main__':
     app.run(debug=True, port=8080, host='127.0.0.1')
 
 # [END app]
-    
-## TODO changer les status request ex 200, 400, 404, ...
